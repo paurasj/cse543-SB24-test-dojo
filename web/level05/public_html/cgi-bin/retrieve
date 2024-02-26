@@ -1,0 +1,94 @@
+#!/usr/bin/python3
+import sys
+import cgi
+import random
+import os
+import tempfile
+from http import cookies
+#debugging
+#import cgitb; cgitb.enable()
+
+STORAGE = "/challenge/storage/"
+
+def die(s):
+    print("Content-Type: text/html")
+    print("")
+    print("""<html>
+  <head>
+    <title>Password Retrieval</title>
+  </head>
+  <body>
+%s
+  </body>
+</html>""" % s)
+    sys.exit(0)
+
+
+form = cgi.FieldStorage()
+
+if "id" in form:
+    id = form["id"].value;
+else:
+    id = ""
+if "site" in form:
+    site = form["site"].value;
+else:
+    site = ""
+if "admin" in form:
+    admin = form["admin"].value;
+else:
+    admin = "0"
+
+debug = False
+if debug:
+    id = "foo1337"
+    site = "bar.com"
+    admin = "1"
+
+if (id == "" or site == ""):
+    die("<p>Missing parameters.</p>")
+
+if not id.isalnum():
+    die("<p>Bad id.</p>")
+
+res = []
+    
+if admin == "1":
+    if 'HTTP_COOKIE' not in os.environ:
+        die("<p>No cookies exist.</p>")
+    if 'site' not in cookies.SimpleCookie(os.environ['HTTP_COOKIE']):
+        die("<p>Non-existent cookie entries: site</p>")
+    if 'password' not in cookies.SimpleCookie(os.environ['HTTP_COOKIE']):
+        die("<p>Non-existent cookie entries: password</p>")
+    cookie = cookies.SimpleCookie(os.environ['HTTP_COOKIE'])
+    if "site" not in cookie or "password" not in cookie:
+        die("<p>malformed cookie</p>")
+    site = cookie['site'].value
+    password = cookie['password'].value
+    
+    if password != 'terriblechoice':
+        die("<p>Wrong password.</p>")
+    
+    for filename in os.listdir(STORAGE):
+        fullpath = "%s%s" % (STORAGE, filename)
+        if os.path.isfile(fullpath):
+            f = open(fullpath, "r")
+            for l in f:
+                if site in l:
+                    res.append(l)
+            f.close()
+        
+    die("<pre>" + '\n'.join(res) + "</pre>")
+
+
+try:
+    f = open(STORAGE + id, "r")
+    for l in f:
+        if site in l:
+            res.append(l)
+    f.close()
+except Exception:
+    die("<p>Cannot retrieve the password. Wrong id?</p>")
+
+die("<pre>" + '\n'.join(res) + "</pre>")
+

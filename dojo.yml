@@ -1,0 +1,370 @@
+id: cse543-sb24-test-pauras
+name: CSE 543 - SB24
+description: |
+  Arizona State University - CSE 543 - Online - Fall 2024 - Session B
+
+type: course
+
+visibility:
+  start: "2023-10-07T00:00:00-07:00"
+
+modules:
+  - id: cse543-introduction
+    name: Introduction
+    description: ""
+    challenges:
+      - id: level-1
+        name: Level 1
+        description: |
+          Welcome to CSE 543!
+
+          This level is to ensure that you know how to submit flags and score in pwn.college.
+
+          Run `/challenge/challenge.py` to get your flag!
+
+          In future levels, all challenge files will be under `/challenge`.
+
+          Have fun!
+
+      - id: level-2
+        name: Level 2
+        description: |
+          Please submit a valid JSON file with the following information:
+
+          ```
+          Your email address
+          Your legal name
+          Your hacker handle (that you used to register for this platform)
+          ```
+
+          Your JSON file must contain one Object with the following keys:
+
+          ```
+          "email"
+          "legal_name"
+          "handle"
+          ```     
+
+          Your JSON file must be named `hacker.json`.
+          For added level of security, you must create an encrypted ZIP file containing only `hacker.json`.
+          The password to the encrypted ZIP file must be `hacker`.
+          The ZIP file shall be named as `hacker.zip`.
+
+          Please submit and verify the `hacker.zip` file via the following command:
+
+          ```
+          /challenge/verify.py path_to_your_hacker_dot_zip
+          ```
+
+          You will get the flag once your `hacker.zip` file is correctly verified.
+
+      - id: level-3
+        name: Level 3
+        description: |
+          Many students have asked me what programming languages they should use for this course.
+          My answer has always been, "it does not matter."
+          This level is a demonstration of why what language you use does not matter.
+
+          Please run `/challenge/challenge.py` and follow the instructions to get your flag.
+
+    visibility:
+      start: "2023-10-07T00:00:00-07:00"
+
+  - id: cryptography
+    name: Cryptography
+    description: Assignments for the cryptography module.
+    challenges:
+      - id: caesar
+        name: Caeser Cipher
+        description: |
+          The purpose of this assignment is to familiarize you with Python (or the programming language you choose) and writing a simple decryption function.
+          You will learn how to read encryption code, deriving the corresponding decryption function (which is the inverse function of the encryption function), implementing the decryption function, and applying the decryption function on a given input string.
+
+          For this project, you will find three files:
+
+          1. `ciphertext.txt` - A ciphertext encrypted with a Caesar cipher.
+          1. `caesarkey.txt` - The key used for the Caesar cipher. It is the stdout output when running `caesar.py` to encrypt the plaintext.
+          1. `caesar.py` - The reference implementation of the Caesar cipher with only the encryption feature.
+
+          You will need to write some code so you can plug in the key and decrypt.
+          The decrypted output should be saved as `caesarplaintext.txt`.
+          Finally, run `/challenge/challenge.py` to verify your decrypted content, and obtain the flag if your decryption works as expected.
+          Remember to submit your decryption code on Coursera!
+
+          The alphabet for the plaintext and ciphertext is the capital letters [A-Z], and the key is a number between 0 and 25.
+
+          If your decryption works correctly, you will see multiple meaningful sentences in English as the plaintext (uppercase letters only, with no spaces between words).
+          Otherwise please go back fix your implementation.
+
+          Note that this assignment is graded automatically, and no partial credits will be provided.
+
+      - id: esper
+        name: Esper Cipher
+        description: |
+          The purpose of this assignment is to familiarize you more with Python (or the programming language you choose) and writing a simple decryption function for a custom encryption routine. You will learn how to read encryption code, deriving the corresponding decryption function (which is the inverse function of the encryption function), implementing the decryption function, and applying the decryption function on a given input string.
+
+          For this project, you will find three files:
+
+          1. `ciphertext.txt` - A ciphertext encrypted with a Esper cipher.
+          1. `esperkey.txt` - The key used for the Esper cipher. It is the stdout output when running `esper.py` to encrypt the plaintext.
+          1. `esper.py` - The reference implementation of the Esper cipher with only the encryption feature.
+
+          Esper cipher is a custom cipher. Unlike Caesar cipher that works on uppercase English alphabet only, Esper cipher works on _bytes_.
+          You will not find its implementation anywhere else.
+          The only reference you have is `esper.py` that implements the Esper cipher.
+
+          You will need to write some code so you can plug in the key and decrypt.
+          You will only save the plain text as `esper_plaintext.txt`.
+          Finally, run `/challenge/challenge.py` to verify your decrypted content, and obtain the flag if your decryption works as expected.
+          Remember to submit your decryption code on Coursera!
+
+          If your decryption works correctly, you will see multiple meaningful sentences in English as the plaintext. Otherwise please go back fix your implementation.
+
+          Note that this assignment is graded automatically, and no partial credits will be provided.
+
+    visibility:
+      start: "2023-09-26T00:00:00-07:00"
+
+  - id: cse543-networking
+    name: Networking Security
+    description: |
+      Assignments for the networking security module.
+
+      Only *UDPSpoof* and *TCPSpoof* are required challenges to accomplish for this module.
+      We provide five other levels to familiarize you with the raw socket programming package that you choose (we recommend Python 3 and scapy).
+      These five levels are optional and not graded.
+
+    challenges:
+      - id: level-1
+        name: Connect to a TCP remote host (optional, not graded)
+        description: |
+          The purpose of this assignment is to familiarize you with the virtual networking environment.
+
+          Your goal is connecting to a remote host via TCP.
+          The remote host at `10.0.0.3` is listening on TCP port `13337`.
+
+          Please run `/challenge/run` to start the virtual networking environment, and follow the instructions to obtain your flag. 
+
+          This challenge is optional and is not graded.
+
+      - id: level-2
+        name: Send a manually crafted Ethernet frame (optional, not graded)
+        description: |
+          The purpose of this assignment is to familiarize you with the virtual networking environment.
+
+          Please manually send an Ethernet frame.
+          The Ethernet frame should have `Ether type=0xFFFF`.
+          The Ethernet packet should be sent to the remote host at `10.0.0.3` @ `ee:ee:ee:ee:ee:ee`.
+
+          Please run `/challenge/run` to start the virtual networking environment, and follow the instructions to obtain your flag. 
+
+          This challenge is optional and is not graded.
+
+      - id: level-3
+        name: Send a manually crafted IP packet (optional, not graded)
+        description: |
+          The purpose of this assignment is to familiarize you with the virtual networking environment.
+
+          Please manually send an IP packet.
+          The IP packet should have `IP proto=0xFF`.
+          The packet should be sent to the remote host at `10.0.0.3`  @ `ee:ee:ee:ee:ee:ee`.
+
+          Please run `/challenge/run` to start the virtual networking environment, and follow the instructions to obtain your flag. 
+
+          This challenge is optional and is not graded.
+
+      - id: level-4
+        name: Send a manually crafted TCP packet (optional, not graded)
+        description: |
+          The purpose of this assignment is to familiarize you with the virtual networking environment.
+
+          Please manually send a TCP packet.
+          The TCP packet should have `TCP sport=31337, dport=31337, seq=31337, ack=31337, flags=APRSF`.
+          The TCP packet should be sent to the remote host at `10.0.0.3`.
+
+          Please run `/challenge/run` to start the virtual networking environment, and follow the instructions to obtain your flag. 
+
+          This challenge is optional and is not graded.
+
+      - id: level-5
+        name: UDPSpoof
+        description: |
+          The purpose of this assignment is to make you feel comfortable with working directly with raw sockets.
+          You will learn how to create and use raw sockets, send raw IP packets with forged source IPs, and manually craft UDP packets.
+
+          A UDP service FlagServ is running at 10.0.0.3:13337.
+          This UDP service receives a target IP address from the user, and if the user is authenticated, it will happily send a flag to you via stdout and via UDP to port 13337 of the target IP.
+          Your job is to write a program that retrieves the flag.
+
+          FlagServ employs THE BEST AUTHENTICATION METHOD IN THE WORLD: Source-IP-based authentication, which means it authenticates all users based on their source IP addresses.
+          If a user's source IP address is trusted, FlagServ will send the flag to the specified destination (repeat: via UDP).
+
+          The only trusted IP is 10.2.4.10. Your task is to break or bypass this source-IP-based authentication scheme and steal the flag.
+
+          Please run `/challenge/run` to start the virtual networking environment, and follow the instructions to obtain your flag. 
+          After finishing this challenge, please remember to submit additional files as required on Coursera (or any other course platforms that ASUOnline uses).
+
+      - id: level-6
+        name: Manually perform a TCP handshake (optional, not graded)
+        description: |
+          The purpose of this assignment is to familiarize you with the virtual networking environment.
+
+          Please manually perform a TCP handshake.
+          The initial TCP packet should have `TCP sport=31337, dport=31337, seq=31337`.
+          The handshake should occur with the remote host at `10.0.0.3` @ `ee:ee:ee:ee:ee:ee`.
+
+          Please run `/challenge/run` to start the virtual networking environment, and follow the instructions to obtain your flag. 
+
+          This challenge is optional and is not graded.
+
+      - id: level-7
+        name: TCPSpoof
+        description: |
+          The purpose of this assignment is to familiarize you with the most traditional type of TCP spoofing attack. You will learn how to create and use raw sockets, send raw IP packets with forged source IPs, manually establish TCP connections, and manually create TCP packets.
+
+          A *TCP* service FlagIt is running at 10.0.0.3:13337.
+          This TCP service receives a target IP address from the user, and if the user is authenticated, it will happily send a flag *via UDP* to port 13337 of the target IP.
+          Your job is to write a program that retrieves the flag.
+
+          FlagIt employs THE BEST AUTHENTICATION METHOD IN THE WORLD: Source-IP-based authentication, which means it authenticates all users based on their source IP addresses.
+          If a user's source IP address is trusted, FlagIt will send out the flag to the specified destination (repeat: via UDP).
+          Otherwise, it will send an error message back to the untrusted user (via UDP, too).
+
+          The only trusted IP is 10.2.4.10.
+          Your task is to break or bypass this source-IP-based authentication scheme and steal the flag.
+
+          Please run `/challenge/run` to start the virtual networking environment, and follow the instructions to obtain your flag.
+
+    visibility:
+      start: "2023-10-23T00:00:00-07:00"
+
+  - id: cse543-software
+    name: Crash Them All (Software Security)
+    description: |
+      Assignments for the Software Security module.
+
+      The purpose of these assignments is to test your understanding of memory corruption vulnerabilities and familiarize you with bug hunting in both C source code and binary code.
+      You will learn how to find memory corruption vulnerabilities in C source code and binary code, and deriving input that is required to trigger the vulnerability and crash the program.
+
+      For each assignment, you will get an executable (`/challenge/prog`).
+      Some executables are shipped with source code (`/challenge/main.c`), while other programs are binary-only (without any source code).
+
+      Each executable takes input from stdin, operates on the input, and either exits gracefully or prints out some output before exiting.
+
+      Your goal is to do "bug hunting" on each executable, find vulnerabilities that can lead to crashes, reason about the input that will trigger the vulnerabilities you found, and then submit your input to get your flag.
+
+      For each program, if source code is available, you are supposed to read its source code and find vulnerabilities.
+      If only binary code is available, you are supposed to use a decompiler (such as angr management or Ghidra) to derive the pseudo code, read the pseudo code, and find vulnerabilities.
+      While reading disassembly is not necessary, you may find disassembly to be more useful than decompiled code at times.
+
+      All .0 levels expect you to crash the programs, and all .1 levels expect you to hijack the control flow of the programs and output "Great Job".
+
+      Your will run the check script (`/challenge/run`) with *one* file for each executable that will act as input to the executable through stdin.
+      For .0 levels, you will score and get your flag if your input crashes the program.
+      For .1 levels, you will score and get your flag if your input hijacks the control flow and makes the executable output "Great Job".
+
+      Note that control-flow hijacking is not always possible in each level.
+
+      Good luck!
+
+    challenges:
+      - id: level-00
+        name: Finding Crashes - Level 0.0
+      - id: level-01
+        name: Finding Crashes - Level 0.1
+      - id: level-10
+        name: Finding Crashes - Level 1.0
+      - id: level-11
+        name: Finding Crashes - Level 1.1
+      - id: level-20
+        name: Finding Crashes - Level 2.0
+      - id: level-21
+        name: Finding Crashes - Level 2.1
+      - id: level-30
+        name: Finding Crashes - Level 3.0
+      - id: level-31
+        name: Finding Crashes - Level 3.1
+      - id: level-40
+        name: Finding Crashes - Level 4.0
+      - id: level-41
+        name: Finding Crashes - Level 4.1
+      - id: level-50
+        name: Finding Crashes - Level 5.0
+      - id: level-51
+        name: Finding Crashes - Level 5.1
+      - id: level-60
+        name: Finding Crashes - Level 6.0
+      - id: level-61
+        name: Finding Crashes - Level 6.1
+      - id: level-70
+        name: Finding Crashes - Level 7.0
+      - id: level-71
+        name: Finding Crashes - Level 7.1
+      - id: level-80
+        name: Finding Crashes - Level 8.0
+      - id: level-81
+        name: Finding Crashes - Level 8.1
+      - id: level-90
+        name: Finding Crashes - Level 9.0
+      - id: level-91
+        name: Finding Crashes - Level 9.1
+
+    visibility:
+      start: "2023-10-29T00:00:00-07:00"
+
+  - id: web
+    name: Pwn Them All (Web Security)
+    description: |
+      The purpose of this assignment is to test your understanding of common web vulnerabilities and guide you to exploit common web vulnerabilities in a controlled environment.
+      You will learn how to perform block-box security audit of small websites without having access to its source code, as well as developing exploits to exploit the vulnerabilities that you find during security audit.
+
+      All vulneable websites are hosted on a virtual machine on Amazon AWS. You must have Internet access to be able to work on this assignment.
+      You will need to use a browser inside the VM, an HTTP request sender (curl), and Burp Suite for this level.
+
+      All web challenges are accessible at http://pwnthemall.cse543.rev.fish:8000/ (or http://127.0.0.1:8000/).
+      Your goal is to exploit each level, find the secret flag (which can be a password, a message, a note, a post, or the bank account login credentials of an important user), and submit the flag.
+      You can work on these levels in any order.
+
+      To make your life easier, the instructor will disclose the intended vulnerability of each level.
+      However, remember that there can definitely be unintended vulnerabilities.
+      It is totally OK if you exploit a level by exploiting unintended vulnerabilities!
+
+      Also keep in mind that the practice mode does not work for web challenges.
+      Please work in the normal mode.
+
+    challenges:
+      - id: level01
+        name: Level 01
+      - id: level02
+        name: Level 02
+      - id: level03
+        name: Level 03
+      - id: level04
+        name: Level 04
+      - id: level05
+        name: Level 05
+      - id: level06
+        name: Level 06
+      - id: level07
+        name: Level 07
+      - id: level08
+        name: Level 08
+
+    visibility:
+      start: "2023-11-01T00:00:00-07:00"
+
+  - id: cse543-fuzzing
+    name: Fuzz Them All
+    description: |
+      The purpose of this assignment is to test your understanding of fuzz testing (fuzzing) and guide you to develop your own binary fuzzer.
+      You will learn how to develop your own simple fuzzer, monitor for crashes, generate high-quality seed input, etc.
+
+      Please use this VM to develop and test your solution.
+      You still need to submit your solution to the TAs (via Coursera) so that we can grade your solutions offline on another host.
+
+    challenges:
+      - id: devvm
+        name: Dev VM
+
+    visibility:
+      start: "2023-11-10T00:00:00-07:00"

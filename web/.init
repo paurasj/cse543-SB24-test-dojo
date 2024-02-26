@@ -1,0 +1,167 @@
+#!/opt/pwn.college/python
+
+import os
+import sys
+import hashlib
+
+is_practice = os.environ.get("DOJO_PRACTICE", "0") == "1"
+level = int(open("/challenge/.config", "r").read())
+FLAG = open("/flag", "r").read().strip(" \n")
+
+
+def init_level03():
+    # in level 03, signers.txt must be group writable by www-data
+    os.system("chmod 660 /challenge/public_html/cgi-bin/signers.txt")
+    os.system("chgrp www-data /challenge/public_html/cgi-bin/signers.txt")
+
+
+def init_level04():
+    # create the session directory
+    os.system("mkdir /challenge/session/")
+    os.system("mkdir /challenge/storage/")
+
+    password = hashlib.md5(FLAG.encode("ascii")).hexdigest()
+    last_filename = hashlib.md5(FLAG.encode("ascii") + b"salt").hexdigest()[:8]
+
+    # move the session file over
+    with open("/challenge/session/sess_91c7e1e10744d69fd8fe35ecfc", "w") as fw:
+        with open("/challenge/sess_91c7e1e10744d69fd8fe35ecfc", "r") as fr:
+            data = fr.read()
+            # FIXME: I'm lazy - just replacing it with the flag
+            # data = data.replace("PASSWORDPASSWORDPASSWORDPASSWORD", password)
+            data = data.replace("PASSWORDPASSWORDPASSWORDPASSWORD", FLAG)
+            data = data.replace("FILENAME", last_filename)
+            fw.write(data)
+    os.system("rm /challenge/sess_91c7e1e10744d69fd8fe35ecfc")
+
+    # change permission
+    os.system("chown -R www-data:www-data /challenge/session/")
+    os.system("chmod -R 700 /challenge/session/")
+    os.system("chown -R www-data:www-data /challenge/storage/")
+    os.system("chmod -R 700 /challenge/storage/")
+
+    # create the data file with the flag inside
+    with open(f"/challenge/storage/{last_filename}", "w") as f:
+        f.write(FLAG)
+
+    # TODO: Update the php session location so that we can log in as "fish" using PHP
+
+
+def init_level05():
+    # change permission
+    os.system("chown -R www-data:www-data /challenge/storage/")
+    os.system("chmod -R 700 /challenge/storage/")
+
+
+def init_level07():
+    # start mysql
+    os.system("service mysql start")
+
+    # fix permission
+    os.system("chmod og+rx /var/run/mysqld")
+
+    db_password = hashlib.md5(FLAG.encode("ascii")).hexdigest()
+
+    # update create_root.sql with the database password
+    with open("/challenge/bloggo/create_root.sql", "r") as f:
+        data = f.read()
+        data = data.replace("DATABASEPASSWORD", db_password)
+    with open("/challenge/bloggo/create_root.sql", "w") as f:
+        f.write(data)
+
+    # update myvar with the database password
+    with open("/challenge/public_html/myvars.php", "r") as f:
+        data = f.read()
+        data = data.replace("DATABASEPASSWORD", db_password)
+    with open("/challenge/public_html/myvars.php", "w") as f:
+        f.write(data)
+
+    # create the database
+    os.system(f"mysql -u root < /challenge/bloggo/create_root.sql")
+    os.system(f"mysql -u root --password={db_password} < /challenge/bloggo/schema_init.sql")
+    os.system(f"mysql -u root --password={db_password} < /challenge/bloggo/db_populate.sql")
+
+    # remove the directory
+    os.system("rm -rf /challenge/bloggo/")
+
+
+SERVICES = {
+    1: {"flag_file": "/challenge/public_html/cgi-bin/verify.js"},
+    2: {"flag_file": "/challenge/public_html/cgi-bin/secretuser.txt"},
+    3: {
+        "flag_file": "/challenge/public_html/cgi-bin/signers.txt",
+        "init": init_level03,
+    },
+    4: {
+        "flag_file": None,
+        "init": init_level04,
+    },
+    5: {
+        "flag_file": "/challenge/storage/supersecretid",
+        "init": init_level05,
+    },
+    6: {"flag_file": "/challenge/public_html/cgi-bin/s3cr37.pwd"},
+    7: {
+        "flag_file": "/challenge/bloggo/db_populate.sql",
+        "init": init_level07,
+    },
+    8: {"flag_file": "/challenge/auth"},
+}
+
+
+def main():
+    if is_practice:
+        # remove everything under /challenge just in case
+        os.system("rm -rf /challenge/")
+        os.system("mkdir /challenge")
+        with open("/challenge/README", "w") as f:
+            f.write("Can't start web challenges in practice mode\n")
+        sys.exit(-1)
+
+    # update the flag
+    flag_file = SERVICES[level]["flag_file"]
+    if flag_file is not None:
+        with open(flag_file, "r") as f:
+            data = f.read()
+            data = data.replace("THISISTHESECRET", FLAG)
+        with open(flag_file, "w") as f:
+            f.write(data)
+
+    # everything should be owned by root:www-data
+    os.system("chown -R root:www-data /challenge/")
+    os.system("chmod -R o-rwx /challenge/")
+    os.system("chmod -R u-s /challenge/")
+    # the top-level directory should be readable by the group
+    os.system("chmod 750 /challenge/")
+    os.system("chmod -R 750 /challenge/public_html/")
+    os.system("chgrp www-data /challenge/")
+    os.system("chgrp www-data /challenge/public_html/")
+
+    # update hosts
+    with open("/etc/hosts", "a") as f:
+        f.write("\n127.0.0.1 pwnthemall.cse543.rev.fish\n")
+
+    # creates the virtual host configuration file
+    with open("/etc/apache2/sites-available/web.conf", "w") as f:
+        with open("/challenge/website.conf", "r") as f0:
+            f.write(f0.read())
+            os.system("rm /challenge/website.conf")
+    os.system("ln -s /etc/apache2/sites-available/web.conf /etc/apache2/sites-enabled/web.conf")
+
+    # run service-specific initialization methods
+    if "init" in SERVICES[level]:
+        SERVICES[level]["init"]()
+
+    # enable cgi and php7.4 for apache2
+    os.system("a2enmod cgi")
+    os.system("a2enmod php7.4")
+
+    # restart apache2
+    os.system("service apache2 restart")
+
+    # remove this file
+    os.system("rm /challenge/.init")
+
+
+if __name__ == "__main__":
+    main()

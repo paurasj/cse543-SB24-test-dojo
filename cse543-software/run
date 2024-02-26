@@ -1,0 +1,219 @@
+#!/opt/pwn.college/python
+
+import os
+import subprocess
+import enum
+import signal
+import ctypes
+import pathlib
+import sys
+
+
+libc = ctypes.CDLL("libc.so.6")
+
+flag = open("/flag").read()
+config = (pathlib.Path(__file__).parent / ".config").read_text().split("\n")
+level = int(config[0])
+check_type = config[1]
+assert check_type in {"crash", "hijack"}
+practice = os.getuid() == 0
+
+
+class CLONE(enum.IntFlag):
+    NEWNS       = 0x00020000 # New mount namespace group
+    NEWCGROUP   = 0x02000000 # New cgroup namespace
+    NEWUTS      = 0x04000000 # New utsname namespace
+    NEWIPC      = 0x08000000 # New ipc namespace
+    NEWUSER     = 0x10000000 # New user namespace
+    NEWPID      = 0x20000000 # New pid namespace
+    NEWNET      = 0x40000000 # New network namespace
+
+
+class CAP(enum.IntFlag):
+    CHOWN            = 1 << 0
+    DAC_OVERRIDE     = 1 << 1
+    DAC_READ_SEARCH  = 1 << 2
+    FOWNER           = 1 << 3
+    FSETID           = 1 << 4
+    KILL             = 1 << 5
+    SETGID           = 1 << 6
+    SETUID           = 1 << 7
+    SETPCAP          = 1 << 8
+    LINUX_IMMUTABLE  = 1 << 9
+    NET_BIND_SERVICE = 1 << 10
+    NET_BROADCAST    = 1 << 11
+    NET_ADMIN        = 1 << 12
+    NET_RAW          = 1 << 13
+    IPC_LOCK         = 1 << 14
+    IPC_OWNER        = 1 << 15
+    SYS_MODULE       = 1 << 16
+    SYS_RAWIO        = 1 << 17
+    SYS_CHROOT       = 1 << 18
+    SYS_PTRACE       = 1 << 19
+    SYS_PACCT        = 1 << 20
+    SYS_ADMIN        = 1 << 21
+    SYS_BOOT         = 1 << 22
+    SYS_NICE         = 1 << 23
+    SYS_RESOURCE     = 1 << 24
+    SYS_TIME         = 1 << 25
+    SYS_TTY_CONFIG   = 1 << 26
+    MKNOD            = 1 << 27
+    LEASE            = 1 << 28
+    AUDIT_WRITE      = 1 << 29
+    AUDIT_CONTROL    = 1 << 30
+    SETFCAP          = 1 << 31
+    MAC_OVERRIDE     = 1 << 32
+    MAC_ADMIN        = 1 << 33
+    SYSLOG           = 1 << 34
+    WAKE_ALARM       = 1 << 35
+    BLOCK_SUSPEND    = 1 << 36
+    AUDIT_READ	     = 1 << 37
+
+
+def run_sandbox(target, *, privileged=True):
+    PR_SET_PDEATHSIG  = 1
+    PR_SET_DUMPABLE   = 4
+
+    # result = multiprocessing.Value("B", False)
+
+    pid = os.fork()
+    if pid:
+        os.wait()
+        return
+
+    suid = os.geteuid() != os.getuid()
+    os.setpgrp()
+    os.seteuid(os.getuid())
+    # TODO:
+    # libc.prctl(PR_SET_DUMPABLE, not suid)
+    libc.prctl(PR_SET_DUMPABLE, True)
+    libc.prctl(PR_SET_PDEATHSIG, signal.SIGKILL)
+
+    sandbox_euid = os.geteuid()
+    sandbox_egid = os.getegid()
+
+    unshare_result = libc.unshare(
+        CLONE.NEWUSER |
+        CLONE.NEWNS |
+        CLONE.NEWCGROUP |
+        CLONE.NEWUTS |
+        CLONE.NEWIPC |
+        CLONE.NEWPID |
+        CLONE.NEWNET
+    )
+    assert unshare_result == 0
+
+    pid = os.fork()
+    if pid:
+        os.wait()
+        sys.exit(0)
+
+    proc_values = {
+        f"/proc/self/setgroups": "deny",
+        f"/proc/self/uid_map": f"0 {sandbox_euid} 1",
+        f"/proc/self/gid_map": f"0 {sandbox_egid} 1",
+    }
+    for path, value in proc_values.items():
+        with open(path, "w") as f:
+            f.write(value)
+
+    libc.prctl(PR_SET_DUMPABLE, False)
+    libc.prctl(PR_SET_PDEATHSIG, signal.SIGKILL)
+
+    # drop privileges
+    if sandbox_euid == 0 and os.getuid() != 0:
+        os.setuid(os.getuid())
+        os.setgid(os.getgid())
+
+    target()
+    sys.exit(0)
+
+
+def _run_prog():
+    proc = subprocess.Popen(
+        ["/challenge/prog"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=False,
+        env={},
+    )
+    return proc
+
+
+def check_crash() -> bool:
+    input_path = sys.argv[1]
+    if not os.path.isfile(input_path):
+        print(f"File {input_path} does not exist.")
+        return False
+
+    with open(input_path, "rb") as f:
+        input_data = f.read()
+
+    proc = _run_prog()
+    stdout, stderr = proc.communicate(input_data)
+
+    if proc.returncode in {-signal.SIGSEGV, -signal.SIGILL}:
+        print(f"Your flag: {flag}")
+        return True
+    else:
+        print(f"Return code of the process: {proc.returncode}")
+        print("No flag for you :<")
+        return False
+
+
+def check_hijack() -> bool:
+    input_path = sys.argv[1]
+    if not os.path.isfile(input_path):
+        print(f"File {input_path} does not exist.")
+        return False
+
+    with open(input_path, "rb") as f:
+        input_data = f.read()
+
+    proc = _run_prog()
+    stdout, stderr = proc.communicate(input_data)
+
+    if b"Great Job" in stdout:
+        print(f"Your flag: {flag}")
+        return True
+    else:
+        print(f"Return code of the process: {proc.returncode}")
+        print(f"Output: {stdout}")
+        print("No flag for you :<")
+        return False
+
+
+def usage():
+    print(f"Usage: {sys.argv[0]} path_to_your_input_file")
+
+
+def challenge():
+    print("Welcome to software security challenges!\n")
+    if check_type == "crash":
+        print("This level checks if you can find input to crash the binary that you are given.")
+        print("You will be awarded with the flag if you manage to crash the binary with your input.")
+    else:
+        print("This level checks if you can find input to hijack the control flow of the binary that you are given.")
+        print("You will be awarded with the flag if you manage to make the binary print out \"Good job\" with your "
+              "input.")
+
+    if os.path.isfile("/challenge/main.c"):
+        print("The source code of the binary is available in /challenge/main.c for your reference.")
+    else:
+        print("The source code of the binary is not provided. Please consider using a decompiler, such as angr "
+              "management or Ghidra.")
+    print()
+
+    if len(sys.argv) != 2:
+        usage()
+        return
+
+    if check_type == "crash":
+        run_sandbox(check_crash)
+    else:
+        run_sandbox(check_hijack)
+
+
+if __name__ == "__main__":
+    challenge()

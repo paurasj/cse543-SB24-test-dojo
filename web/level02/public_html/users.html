@@ -1,0 +1,63 @@
+<head>
+  <title>Users of the Ridiculous Social Network</title>
+</head>
+
+<body>
+
+  <h1>Active Users in the Ridiculous Social Network</h1>
+  <div id="userlist">
+    <pre>Checking for users...</pre>
+  </div>
+
+  <script language="JavaScript">
+  var http_request = false;
+
+  function getusers() {
+    if (window.XMLHttpRequest) { // non IE
+      http_request = new XMLHttpRequest(); 
+    } 
+    else if (window.ActiveXObject) { //
+      try { 
+        http_request = new ActiveXObject("Microsoft.XMLHTTP"); 
+      } 
+      catch (error) {}
+    } 
+    if (!http_request) {
+      alert('Cannot create XML HTTP instance');
+      return false;
+    }
+  
+    http_request.onreadystatechange = stateManager;
+    var myurl = "/cgi-bin/users.php";
+    var f = document.getElementById("filter");
+    if (f != null) {
+      if (f.value != '') {
+        myurl = myurl + "?filter=" +  f.value;
+      }
+    }
+    /* alert(myurl); */
+    http_request.open("GET", myurl, true);
+    http_request.send(null);
+
+    /* setTimeout("getusers()", 5000);  */
+  }  
+
+  function stateManager() {
+    if (http_request.readyState == 4) {
+      if (http_request.status == 200) {
+        updatepage(http_request.responseText); 
+      } else {
+        alert('There was a problem with the request.');
+      }
+    }
+  }
+
+  function updatepage(str) {
+    document.getElementById("userlist").innerHTML = str;
+  } 
+
+  setTimeout("getusers()", 5000); 
+    </script>
+  </body>
+</html>
+

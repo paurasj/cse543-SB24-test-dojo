@@ -1,0 +1,196 @@
+td.form-label {
+	font-size: 10pt;
+	text-align: right;
+}
+
+td.form-label-noalign {
+	font-size: 10pt;
+}
+
+body {
+  background: white; 
+  color: black;
+  background-color: lightgray; 
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Heading definitions */
+h1 {
+  text-align: right; 
+  color: white;
+  font-weight: normal;
+}
+
+h2 {
+  text-align: left; 
+  color: gray; 
+  font-weight: normal;
+}
+
+/* Link definitions */
+a:link {
+  color: black;
+}
+
+a:visited {
+  color: darkgray;
+}
+
+a:active {
+  color: gray;
+}
+
+/* List definitions */
+ul {
+  list-style-type: square;
+}
+
+li {
+  padding: .2em .2em .2em .2em; 
+}
+
+/* Table definitions */
+thead {
+  background: black; 
+  color: white; 
+  font-weight: bold
+}
+
+thead td {
+  padding: .1em 1em .1em 1em; 
+}
+
+tbody td {
+  padding: .2em .2em .2em .2em; 
+}
+
+/* Definition list definitions */
+dt {
+  background: gray; 
+  width: ;
+  color: white; 
+  padding: .2em 2em .2em 2em; 
+  margin: .1%; 
+  font-weight: bold; 
+}
+
+div#page {
+  width: 700px;
+  border: 1px solid darkgray;
+  background-color: #ffffff;
+  margin-top: 3px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div#header {
+  border-style: solid;
+  border-width: 0;
+  height: 180px;
+  padding: .4em 2em .4em .2em;
+  background-image: url("banner.jpg"); 
+}
+
+div#navigation{
+	clear: both;
+/*	float: left;*/
+	width: 800;
+	height: 25px;
+  border-style: solid;
+  border-width: 0px;
+  border-color: gray; 
+  display: block;
+}
+
+
+div#navigation ul{
+	       width: 800;
+	       list-style: none;
+	       margin: 0;
+	       padding: 0;
+}
+
+div#navigation ul li{
+  float: left;
+  margin: 2px 2px 2px 2px;
+  padding: 0px 0px 0px 0px;
+  /* background-image: url(nav_bg.jpg); 
+     background-repeat: no-repeat; */
+  background:  gray; 
+  text-align: center;
+  vertical-align: top;
+  height: 20px;
+}
+
+div#navigation ul li a{
+	       margin: 2px 0 0 0;
+	       padding: 0;
+	       font-size: 12px;
+/*	       font-weight: bold;*/
+	       color: #FFFFFF;
+	       text-decoration: none;
+	       /* text-transform: uppercase; */
+	       height: 20px;
+	       display: block;
+}
+
+/* these are actual display widths minus 2 pixels for internal padding to push the text toward center */
+#home{width:80px;}
+#login{width:80px;}
+#newuser{width:85px;}
+#newblog{width:80px;}
+#newentry{width:80px;}
+#view{width:90px;}
+#search{width:90px;}
+#logout{width:80px;}
+
+/* Main body definitions */
+div#body {
+  /* border-style: solid;
+  border-width: medium;
+  border-color: darkgray;*/
+  color: black;
+  /* height: 200px; */
+  padding: 4em .4em 3em .4em; 
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 90%;
+  background-image: url("body_bg.jpg"); 
+     background-repeat: no-repeat; 
+}
+
+div#body p {
+  /* border-style: solid;
+  border-width: medium;
+  border-color: darkgray;*/
+  width: 500px;
+}
+
+#login_img {
+  padding: 3em .4em 3em .4em; 
+  width: 200px;
+  float: right;
+}
+
+/* Footer definitions */
+div#footer {
+  /* border-style: solid;
+  border-width: medium;
+  border-color: darkred;*/
+  clear: both;
+  font-style: italic;
+  font-size: 70%;
+  width: 690px;
+  margin-top: 3px;
+  margin-left: auto;
+  margin-right: auto;
+  font-style: italic;
+  margin-bottom: 3px;
+  font-size: 50%;
+  text-align: right; 
+}
+
+div#footer hr {
+  // width: 690px;
+  width: 100%;
+  height: 1px;
+}

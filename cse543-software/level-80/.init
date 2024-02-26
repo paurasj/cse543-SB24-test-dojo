@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm /challenge/main.c
+rm /challenge/.init
